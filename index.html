@@ -1,0 +1,1396 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Speedy</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lilita+One&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #eeeeee;
+    --ink: #303030;
+    --muted: #777777;
+    --card: rgba(255,255,255,.96);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Fredoka', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    user-select: none;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+    border: none;
+    cursor: pointer;
+}
+
+button:focus-visible {
+    outline: 3px solid #777;
+    outline-offset: 4px;
+}
+
+#game {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.screen {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.menu-content {
+    width: min(340px, 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+}
+
+.logo {
+    text-align: center;
+    font-family: 'Lilita One', 'Fredoka', sans-serif;
+    font-size: clamp(62px, 11vw, 88px);
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 22px;
+    color: #303030;
+    text-shadow: 0 4px 0 #d2d2d2, 0 8px 14px rgba(0,0,0,.08);
+    transform: rotate(-2deg);
+}
+
+.logo span {
+    color: #777777;
+}
+
+.menu-btn {
+    width: 100%;
+    min-height: 58px;
+    padding: 14px 20px;
+    border-radius: 16px;
+    background: var(--card);
+    border: 2px solid rgba(0,0,0,.07);
+    box-shadow: 0 5px 0 #d0d0d0, 0 9px 18px rgba(0,0,0,.065);
+    font-family: 'Lilita One', 'Fredoka', sans-serif;
+    font-size: 19px;
+    letter-spacing: .7px;
+    transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+
+.menu-btn:hover {
+    background: white;
+    transform: translateY(-3px) rotate(-.5deg);
+    box-shadow: 0 8px 0 #d0d0d0, 0 13px 23px rgba(0,0,0,.09);
+}
+
+.menu-btn:active {
+    transform: translateY(3px) scale(.99);
+    box-shadow: 0 2px 0 #d0d0d0, 0 4px 8px rgba(0,0,0,.05);
+}
+
+.panel {
+    width: min(430px, 100%);
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+    padding: 30px;
+    text-align: center;
+    border-radius: 24px;
+    background: var(--card);
+    border: 2px solid white;
+    box-shadow: 0 8px 0 #d4d4d4, 0 20px 50px rgba(0,0,0,.12);
+}
+
+.panel h2 {
+    font-family: 'Lilita One', 'Fredoka', sans-serif;
+    font-size: 34px;
+    letter-spacing: .5px;
+    margin-bottom: 21px;
+    text-shadow: 0 2px 0 #e1e1e1;
+}
+
+.panel p {
+    color: #555;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.65;
+    margin-bottom: 13px;
+}
+
+.panel p strong {
+    color: #303030;
+    font-weight: 700;
+}
+
+.panel .menu-btn {
+    margin-top: 13px;
+}
+
+.option-row {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.option-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-family: 'Lilita One', 'Fredoka', sans-serif;
+    font-size: 18px;
+}
+
+.option-value {
+    color: #777;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.keybind-btn {
+    width: 100%;
+    padding: 13px 15px;
+    border-radius: 12px;
+    background: #eeeeee;
+    border: 2px solid #dedede;
+    font-family: 'Lilita One', 'Fredoka', sans-serif;
+    font-size: 17px;
+    transition: background .12s ease;
+}
+
+.keybind-btn:hover {
+    background: #e4e4e4;
+}
+
+.keybind-btn.listening {
+    background: #dedede;
+    border-color: #777;
+}
+
+.option-slider {
+    display: block;
+    width: 100%;
+    height: 8px;
+    cursor: pointer;
+    accent-color: #555555;
+}
+
+.option-help {
+    color: #777;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-top: 8px;
+}
+
+.color-section {
+    margin: 21px 0 26px;
+    text-align: left;
+}
+
+.color-section label {
+    display: block;
+    margin-bottom: 14px;
+    font-family: 'Lilita One', sans-serif;
+    font-size: 19px;
+}
+
+.color-options {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 13px;
+}
+
+.color-swatch {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 3px solid rgba(0,0,0,.10);
+    box-shadow: 0 4px 0 rgba(0,0,0,.10), 0 5px 10px rgba(0,0,0,.06);
+    position: relative;
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.color-swatch:hover {
+    transform: scale(1.09) rotate(-5deg);
+    box-shadow: 0 5px 0 rgba(0,0,0,.12), 0 7px 12px rgba(0,0,0,.10);
+}
+
+.color-swatch.selected {
+    border: 3px solid #303030;
+    box-shadow: 0 0 0 3px white, 0 0 0 5px #303030, 0 5px 10px rgba(0,0,0,.12);
+}
+
+.color-swatch.selected::after {
+    content: "✓";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 700;
+    color: #222;
+    text-shadow: 0 0 3px white, 0 0 3px white;
+}
+
+.color-swatch.light-check.selected::after {
+    color: white;
+    text-shadow: 0 0 3px #222;
+}
+
+.preview-area {
+    height: 90px;
+    margin: 5px 0 12px;
+    border-radius: 16px;
+    background: #eeeeee;
+    box-shadow: inset 0 3px 6px rgba(0,0,0,.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#trail-preview {
+    width: 76px;
+    height: 8px;
+    border-radius: 10px;
+    margin-right: -2px;
+}
+
+#ball-preview {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,.14);
+    box-shadow: 0 3px 0 rgba(0,0,0,.12);
+}
+
+/* Ball skins */
+.skin-options {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.skin-option {
+    min-width: 0;
+    padding: 10px 5px;
+    border-radius: 15px;
+    background: #eeeeee;
+    border: 2px solid #dedede;
+    box-shadow: 0 3px 0 rgba(0,0,0,.07), 0 5px 10px rgba(0,0,0,.045);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+    transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+
+.skin-option:hover {
+    transform: translateY(-2px);
+    background: #e5e5e5;
+    box-shadow: 0 5px 0 rgba(0,0,0,.08), 0 8px 13px rgba(0,0,0,.075);
+}
+
+.skin-option.selected {
+    border-color: #303030;
+    background: #e4e4e4;
+    box-shadow: 0 0 0 2px white, 0 0 0 4px #303030, 0 5px 12px rgba(0,0,0,.10);
+}
+
+.skin-option img {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    background: #d7d7d7;
+    border: 1px solid rgba(0,0,0,.12);
+}
+
+.skin-option span {
+    font-family: 'Lilita One', 'Fredoka', sans-serif;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+.skin-status {
+    margin-top: 10px;
+    color: #777;
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* Subtle main-menu particles */
+#menu-particles {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+#main-menu {
+    z-index: 5;
+}
+
+@media(max-width:480px) {
+    .panel {
+        padding: 24px 20px;
+    }
+
+    .menu-content {
+        max-width: 300px;
+    }
+
+    .color-options {
+        gap: 9px;
+    }
+
+    .skin-option img {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@media(prefers-reduced-motion:reduce) {
+    .menu-btn,
+    .skin-option,
+    .color-swatch {
+        transition: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="game"></canvas>
+<canvas id="menu-particles" aria-hidden="true"></canvas>
+
+<div id="hud" class="hidden">
+    <div id="distance">0 m</div>
+</div>
+
+<section id="main-menu" class="screen">
+    <div class="menu-content">
+        <div class="logo">Speed<span>y</span></div>
+        <button class="menu-btn" id="start-btn">LET'S PLAY!</button>
+        <button class="menu-btn" id="how-btn">HOW TO PLAY</button>
+        <button class="menu-btn" id="customize-btn">CUSTOMIZE</button>
+        <button class="menu-btn" id="options-btn">OPTIONS</button>
+    </div>
+</section>
+
+<section id="how-screen" class="screen hidden">
+    <div class="panel">
+        <h2>HOW TO PLAY</h2>
+        <p><strong>HOLD LEFT CLICK OR YOUR CONFIGURED KEY</strong> to fly diagonally upward at 45°.</p>
+        <p><strong>RELEASE</strong> to fly diagonally downward at 45°.</p>
+        <p>Stay inside the tunnel, avoid the walls, and travel as far as possible!</p>
+        <button class="menu-btn" id="how-back">BACK</button>
+    </div>
+</section>
+
+<section id="customize-screen" class="screen hidden">
+    <div class="panel">
+        <h2>CUSTOMIZE</h2>
+
+        <div class="color-section">
+            <label>Ball color</label>
+            <div class="preview-area">
+                <div id="ball-preview"></div>
+            </div>
+            <div class="color-options" id="ball-colors"></div>
+        </div>
+
+        <div class="color-section">
+            <label>Ball skin</label>
+
+            <div class="skin-options" id="skin-options">
+                <button class="skin-option" type="button" data-skin="cat" aria-label="Cat skin">
+                    <img src="skin1.png" alt="Cat skin preview">
+                    <span>Cat Skin</span>
+                </button>
+
+                <button class="skin-option" type="button" data-skin="soccer" aria-label="Soccer skin">
+                    <img src="skin2.png" alt="Soccer skin preview">
+                    <span>Soccer Skin</span>
+                </button>
+
+                <button class="skin-option" type="button" data-skin="city" aria-label="City skin">
+                    <img src="skin3.png" alt="City skin preview">
+                    <span>City Skin</span>
+                </button>
+            </div>
+
+            <div class="skin-status" id="skin-status">
+                Choose a skin, or select a ball color to use a plain ball.
+            </div>
+        </div>
+
+        <div class="color-section">
+            <label>Trail color</label>
+            <div class="preview-area">
+                <div id="trail-preview"></div>
+            </div>
+            <div class="color-options" id="trail-colors"></div>
+        </div>
+
+        <button class="menu-btn" id="customize-back">DONE</button>
+    </div>
+</section>
+
+<section id="options-screen" class="screen hidden">
+    <div class="panel">
+        <h2>OPTIONS</h2>
+
+        <div class="option-row">
+            <div class="option-label">
+                <span>Fly upward key</span>
+                <span class="option-value" id="keybind-value">SPACE</span>
+            </div>
+
+            <button class="keybind-btn" id="keybind-btn">CHANGE KEYBIND</button>
+
+            <div class="option-help" id="keybind-help">
+                Click the button and press any key to set your controls. Mouse click still works.
+            </div>
+        </div>
+
+        <div class="option-row">
+            <div class="option-label">
+                <label for="ball-size">Ball size</label>
+                <span class="option-value" id="ball-size-value">14</span>
+            </div>
+            <input class="option-slider" id="ball-size" type="range" min="8" max="28" step="1" value="14">
+        </div>
+
+        <div class="option-row">
+            <div class="option-label">
+                <label for="trail-size">Trail size</label>
+                <span class="option-value" id="trail-size-value">25</span>
+            </div>
+            <input class="option-slider" id="trail-size" type="range" min="5" max="50" step="1" value="25">
+        </div>
+
+        <button class="menu-btn" id="options-back">DONE</button>
+    </div>
+</section>
+
+<section id="game-over" class="screen hidden">
+    <div class="panel">
+        <h2>GAME OVER!</h2>
+
+        <div class="result-row">
+            <span>Distance</span>
+            <span id="final-score">0 m</span>
+        </div>
+
+        <div class="result-row">
+            <span>Best</span>
+            <span id="best-score">0 m</span>
+        </div>
+
+        <button class="menu-btn" id="retry-btn">TRY AGAIN</button>
+        <button class="menu-btn" id="home-btn">MAIN MENU</button>
+    </div>
+</section>
+
+<script>
+(() => {
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const $ = id => document.getElementById(id);
+
+const particleCanvas = $('menu-particles');
+const particleCtx = particleCanvas.getContext('2d');
+
+const SAFE_START_DISTANCE = 700;
+
+let BALL_RADIUS = Number(localStorage.getItem('speedy-ball-size') || 14);
+let TRAIL_WIDTH = Number(localStorage.getItem('speedy-trail-size') || 25);
+
+const ballPalette = [
+    '#ffffff', '#ff6464', '#ffb84d', '#ffe66d', '#77df91',
+    '#61d5e8', '#6598ff', '#b28aff', '#ff83cb', '#333333'
+];
+
+const trailPalette = [
+    '#ffffff', '#ff6464', '#ff9e45', '#ffe66d', '#77df91',
+    '#61d5e8', '#6598ff', '#b28aff', '#ff83cb', '#555555'
+];
+
+const skinDefinitions = {
+    cat: { name: 'Cat Skin', src: 'skin1.png' },
+    soccer: { name: 'Soccer Skin', src: 'skin2.png' },
+    city: { name: 'City Skin', src: 'skin3.png' }
+};
+
+const skinImages = {};
+
+for (const [skinId, skin] of Object.entries(skinDefinitions)) {
+    const img = new Image();
+    img.src = skin.src;
+    skinImages[skinId] = img;
+}
+
+let selectedSkin = localStorage.getItem('speedy-ball-skin') || 'none';
+
+if (selectedSkin !== 'none' && !skinDefinitions[selectedSkin]) {
+    selectedSkin = 'none';
+}
+
+let W = innerWidth;
+let H = innerHeight;
+let dpr = Math.min(devicePixelRatio || 1, 2);
+let state = 'menu';
+let holding = false;
+let listeningForKey = false;
+
+let cameraX = 0;
+let playerScreenX = W * .20;
+let playerY = H * .5;
+let distance = 0;
+let best = Number(localStorage.getItem('geodash-best') || 0);
+let gameSpeed = 340;
+let corridor = [];
+let lastSegment = null;
+let trail = [];
+let lastTime = 0;
+
+let ballColor = localStorage.getItem('geodash-ball-color') || '#ffffff';
+let trailColor = localStorage.getItem('geodash-trail-color') || '#ffffff';
+let flyKey = localStorage.getItem('speedy-fly-key') || 'Space';
+
+/* Small, subtle particles used only on the main menu */
+let particles = [];
+let particleWidth = W;
+let particleHeight = H;
+let particleLastTime = 0;
+
+function createParticles() {
+    particles = [];
+
+    const count = Math.min(65, Math.max(28, Math.floor(W * H / 18000)));
+
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            radius: Math.random() * 1.25 + 0.45,
+            speed: Math.random() * 15 + 7,
+            drift: (Math.random() - 0.5) * 5,
+            alpha: Math.random() * 0.28 + 0.12
+        });
+    }
+}
+
+function resizeParticles() {
+    particleWidth = innerWidth;
+    particleHeight = innerHeight;
+
+    particleCanvas.width = Math.round(particleWidth * dpr);
+    particleCanvas.height = Math.round(particleHeight * dpr);
+    particleCanvas.style.width = particleWidth + 'px';
+    particleCanvas.style.height = particleHeight + 'px';
+
+    particleCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    createParticles();
+}
+
+function animateParticles(now) {
+    const dt = particleLastTime
+        ? Math.min((now - particleLastTime) / 1000, 0.04)
+        : 0;
+
+    particleLastTime = now;
+
+    particleCtx.clearRect(0, 0, particleWidth, particleHeight);
+
+    if (state === 'menu') {
+        for (const p of particles) {
+            p.x += p.drift * dt;
+            p.y -= p.speed * dt;
+
+            if (p.y < -5) {
+                p.y = particleHeight + 5;
+                p.x = Math.random() * particleWidth;
+            }
+
+            if (p.x < -5) p.x = particleWidth + 5;
+            if (p.x > particleWidth + 5) p.x = -5;
+
+            particleCtx.beginPath();
+            particleCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            particleCtx.fillStyle = `rgba(0,0,0,${p.alpha})`;
+            particleCtx.fill();
+        }
+    }
+
+    requestAnimationFrame(animateParticles);
+}
+
+function resize() {
+    W = innerWidth;
+    H = innerHeight;
+    dpr = Math.min(devicePixelRatio || 1, 2);
+
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    resizeParticles();
+
+    if (state !== 'playing') {
+        playerY = H * .5;
+        playerScreenX = W * .20;
+    }
+}
+
+addEventListener('resize', resize);
+resize();
+
+const screens = {
+    menu: $('main-menu'),
+    how: $('how-screen'),
+    customize: $('customize-screen'),
+    options: $('options-screen'),
+    over: $('game-over')
+};
+
+function showScreen(name) {
+    Object.values(screens).forEach(el => el.classList.add('hidden'));
+
+    if (name && screens[name]) {
+        screens[name].classList.remove('hidden');
+    }
+
+    listeningForKey = false;
+    $('keybind-btn').classList.remove('listening');
+    $('keybind-btn').textContent = 'CHANGE KEYBIND';
+}
+
+function playerX() {
+    return playerScreenX;
+}
+
+function playerWorldX() {
+    return cameraX + playerScreenX;
+}
+
+function updatePreview() {
+    const preview = $('ball-preview');
+
+    preview.style.background = ballColor;
+    preview.style.backgroundImage = 'none';
+    preview.style.overflow = 'hidden';
+
+    if (selectedSkin !== 'none' && skinImages[selectedSkin]) {
+        preview.style.backgroundImage = `url("${skinDefinitions[selectedSkin].src}")`;
+        preview.style.backgroundSize = 'cover';
+        preview.style.backgroundPosition = 'center';
+    }
+
+    $('trail-preview').style.background = trailColor;
+    $('trail-preview').style.boxShadow = `0 0 10px ${trailColor}`;
+}
+
+function updateSkinSelection() {
+    document.querySelectorAll('.skin-option').forEach(button => {
+        button.classList.toggle(
+            'selected',
+            button.dataset.skin === selectedSkin
+        );
+    });
+
+    $('skin-status').textContent = selectedSkin === 'none'
+        ? 'No skin selected. Your chosen ball color will be used.'
+        : skinDefinitions[selectedSkin].name + ' selected.';
+
+    updatePreview();
+}
+
+function selectSkin(skinId) {
+    selectedSkin = skinId;
+    localStorage.setItem('speedy-ball-skin', selectedSkin);
+    updateSkinSelection();
+}
+
+document.querySelectorAll('.skin-option').forEach(button => {
+    button.addEventListener('click', () => selectSkin(button.dataset.skin));
+});
+
+function formatKey(code) {
+    const names = {
+        Space: 'SPACE',
+        ArrowUp: 'UP ARROW',
+        ArrowDown: 'DOWN ARROW',
+        ArrowLeft: 'LEFT ARROW',
+        ArrowRight: 'RIGHT ARROW',
+        Enter: 'ENTER',
+        Escape: 'ESCAPE',
+        Tab: 'TAB',
+        Backspace: 'BACKSPACE',
+        ShiftLeft: 'LEFT SHIFT',
+        ShiftRight: 'RIGHT SHIFT',
+        ControlLeft: 'LEFT CTRL',
+        ControlRight: 'RIGHT CTRL',
+        AltLeft: 'LEFT ALT',
+        AltRight: 'RIGHT ALT'
+    };
+
+    if (names[code]) return names[code];
+    if (code.startsWith('Key')) return code.slice(3);
+    if (code.startsWith('Digit')) return code.slice(5);
+    if (code.startsWith('Numpad')) return 'NUM ' + code.slice(6);
+
+    return code.toUpperCase();
+}
+
+function updateKeybindDisplay() {
+    $('keybind-value').textContent = formatKey(flyKey);
+}
+
+function createColorOptions(containerId, palette, currentColor, setColor) {
+    const container = $(containerId);
+    container.innerHTML = '';
+
+    palette.forEach(color => {
+        const button = document.createElement('button');
+
+        button.type = 'button';
+        button.className = 'color-swatch';
+        button.style.background = color;
+        button.title = color;
+        button.setAttribute('aria-label', color);
+
+        if (color === '#ffffff' || color === '#ffe66d') {
+            button.classList.add('light-check');
+        }
+
+        button.classList.toggle(
+            'selected',
+            color.toLowerCase() === currentColor.toLowerCase()
+        );
+
+        button.addEventListener('click', () => {
+            setColor(color);
+
+            container.querySelectorAll('.color-swatch').forEach(swatch => {
+                swatch.classList.toggle(
+                    'selected',
+                    swatch.title.toLowerCase() === color.toLowerCase()
+                );
+            });
+
+            updatePreview();
+        });
+
+        container.appendChild(button);
+    });
+}
+
+function refreshColorOptions() {
+    createColorOptions('ball-colors', ballPalette, ballColor, color => {
+        ballColor = color;
+        localStorage.setItem('geodash-ball-color', color);
+        selectSkin('none');
+    });
+
+    createColorOptions('trail-colors', trailPalette, trailColor, color => {
+        trailColor = color;
+        localStorage.setItem('geodash-trail-color', color);
+    });
+
+    updateSkinSelection();
+}
+
+function updateSizeOptions() {
+    $('ball-size').value = BALL_RADIUS;
+    $('trail-size').value = TRAIL_WIDTH;
+    $('ball-size-value').textContent = BALL_RADIUS;
+    $('trail-size-value').textContent = TRAIL_WIDTH;
+}
+
+$('start-btn').addEventListener('click', startGame);
+$('retry-btn').addEventListener('click', startGame);
+
+$('how-btn').addEventListener('click', () => showScreen('how'));
+$('how-back').addEventListener('click', () => showScreen('menu'));
+
+$('customize-btn').addEventListener('click', () => {
+    refreshColorOptions();
+    showScreen('customize');
+});
+
+$('customize-back').addEventListener('click', () => showScreen('menu'));
+
+$('options-btn').addEventListener('click', () => {
+    updateKeybindDisplay();
+    updateSizeOptions();
+    showScreen('options');
+});
+
+$('options-back').addEventListener('click', () => showScreen('menu'));
+
+$('home-btn').addEventListener('click', () => {
+    state = 'menu';
+    holding = false;
+    $('hud').classList.add('hidden');
+    showScreen('menu');
+});
+
+$('keybind-btn').addEventListener('click', () => {
+    listeningForKey = true;
+    holding = false;
+
+    $('keybind-btn').textContent = 'PRESS ANY KEY...';
+    $('keybind-btn').classList.add('listening');
+    $('keybind-help').textContent =
+        'Waiting for a key. Press Escape to cancel.';
+});
+
+$('ball-size').addEventListener('input', event => {
+    BALL_RADIUS = Number(event.target.value);
+    $('ball-size-value').textContent = BALL_RADIUS;
+    localStorage.setItem('speedy-ball-size', String(BALL_RADIUS));
+});
+
+$('trail-size').addEventListener('input', event => {
+    TRAIL_WIDTH = Number(event.target.value);
+    $('trail-size-value').textContent = TRAIL_WIDTH;
+    localStorage.setItem('speedy-trail-size', String(TRAIL_WIDTH));
+});
+
+/* Random 45-degree corridor slopes */
+function getRandomSlope(center, gap) {
+    const minCenter = Math.max(H * .31, gap / 2 + BALL_RADIUS + 8);
+    const maxCenter = Math.min(H * .69, H - gap / 2 - BALL_RADIUS - 8);
+
+    const upRoom = Math.max(0, center - minCenter);
+    const downRoom = Math.max(0, maxCenter - center);
+
+    const directions = [];
+    if (upRoom > 0) directions.push(-1);
+    if (downRoom > 0) directions.push(1);
+
+    if (!directions.length) {
+        return { nextCenter: center, width: 125 };
+    }
+
+    const direction = directions[Math.floor(Math.random() * directions.length)];
+    const available = direction < 0 ? upRoom : downRoom;
+    const desiredStep = 45 + Math.random() * 55;
+    const step = Math.min(desiredStep, available);
+
+    // Horizontal distance equals vertical distance: exactly 45 degrees.
+    return {
+        nextCenter: center + direction * step,
+        width: step
+    };
+}
+
+function generateCorridor() {
+    corridor = [];
+
+    let x = -200;
+    let center = H * .5;
+    const gap = Math.min(H * .43, 330);
+
+    while (x < W + 1600) {
+        const safe = x < SAFE_START_DISTANCE;
+        let nextCenter = center;
+        let width = 125;
+
+        if (safe) {
+            nextCenter = H * .5;
+        } else {
+            const slope = getRandomSlope(center, gap);
+            nextCenter = slope.nextCenter;
+            width = slope.width;
+        }
+
+        corridor.push({
+            x, width,
+            top1: center - gap / 2,
+            bottom1: center + gap / 2,
+            top2: nextCenter - gap / 2,
+            bottom2: nextCenter + gap / 2
+        });
+
+        x += width;
+        center = nextCenter;
+    }
+
+    lastSegment = corridor[corridor.length - 1];
+}
+
+function extendCorridor() {
+    while (lastSegment && lastSegment.x < cameraX + W + 1500) {
+        const prev = lastSegment;
+        const x = prev.x + prev.width;
+        const center = (prev.top2 + prev.bottom2) / 2;
+        const gap = prev.bottom2 - prev.top2;
+        const safe = x < SAFE_START_DISTANCE;
+
+        let nextCenter = center;
+        let width = 125;
+
+        if (safe) {
+            nextCenter = H * .5;
+        } else {
+            const slope = getRandomSlope(center, gap);
+            nextCenter = slope.nextCenter;
+            width = slope.width;
+        }
+
+        const segment = {
+            x, width,
+            top1: prev.top2,
+            bottom1: prev.bottom2,
+            top2: nextCenter - gap / 2,
+            bottom2: nextCenter + gap / 2
+        };
+
+        corridor.push(segment);
+        lastSegment = segment;
+    }
+
+    while (corridor.length > 4 && corridor[1].x < cameraX - W - 600) {
+        corridor.shift();
+    }
+}
+
+function getCorridorAt(worldX) {
+    for (const s of corridor) {
+        if (worldX >= s.x && worldX <= s.x + s.width) {
+            const t = (worldX - s.x) / s.width;
+
+            return {
+                top: s.top1 + (s.top2 - s.top1) * t,
+                bottom: s.bottom1 + (s.bottom2 - s.bottom1) * t
+            };
+        }
+    }
+
+    if (corridor.length) {
+        const s = corridor[corridor.length - 1];
+        return { top: s.top2, bottom: s.bottom2 };
+    }
+
+    return { top: 0, bottom: H };
+}
+
+function startGame() {
+    state = 'playing';
+    holding = false;
+
+    cameraX = 0;
+    playerScreenX = W * .20;
+    playerY = H * .5;
+    distance = 0;
+    gameSpeed = 340;
+    trail = [];
+
+    generateCorridor();
+    showScreen(null);
+
+    $('hud').classList.remove('hidden');
+    $('distance').textContent = '0 m';
+
+    lastTime = performance.now();
+    requestAnimationFrame(loop);
+}
+
+function endGame() {
+    if (state !== 'playing') return;
+
+    state = 'over';
+    holding = false;
+
+    const score = Math.floor(distance);
+
+    if (score > best) {
+        best = score;
+        localStorage.setItem('geodash-best', String(best));
+    }
+
+    $('final-score').textContent = score + ' m';
+    $('best-score').textContent = best + ' m';
+
+    $('hud').classList.add('hidden');
+    showScreen('over');
+}
+
+function setHolding(value) {
+    if (state === 'playing') holding = value;
+}
+
+canvas.addEventListener('pointerdown', event => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    event.preventDefault();
+    setHolding(true);
+}, { passive: false });
+
+addEventListener('pointerup', event => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    setHolding(false);
+});
+
+addEventListener('pointercancel', () => setHolding(false));
+addEventListener('blur', () => setHolding(false));
+
+addEventListener('keydown', event => {
+    if (listeningForKey) {
+        event.preventDefault();
+
+        if (event.code === 'Escape') {
+            listeningForKey = false;
+            $('keybind-btn').classList.remove('listening');
+            $('keybind-btn').textContent = 'CHANGE KEYBIND';
+            $('keybind-help').textContent =
+                'Keybind unchanged. Mouse click still works.';
+            return;
+        }
+
+        if (event.code === 'Tab') return;
+
+        flyKey = event.code;
+        localStorage.setItem('speedy-fly-key', flyKey);
+
+        listeningForKey = false;
+        $('keybind-btn').classList.remove('listening');
+        $('keybind-btn').textContent = 'CHANGE KEYBIND';
+        $('keybind-help').textContent =
+            'Keybind saved. Mouse click still works.';
+
+        updateKeybindDisplay();
+        return;
+    }
+
+    if (event.code === flyKey) {
+        event.preventDefault();
+        if (!event.repeat) setHolding(true);
+    }
+});
+
+addEventListener('keyup', event => {
+    if (event.code === flyKey) {
+        event.preventDefault();
+        setHolding(false);
+    }
+});
+
+function drawBackground() {
+    ctx.fillStyle = '#eeeeee';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = 'rgba(0,0,0,.035)';
+    ctx.lineWidth = 1;
+
+    const grid = 48;
+    const offset = (cameraX * .15) % grid;
+
+    for (let x = -offset; x < W; x += grid) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, H);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y < H; y += grid) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(W, y);
+        ctx.stroke();
+    }
+}
+
+function drawCorridor() {
+    if (!corridor.length) return;
+
+    ctx.fillStyle = '#d3d3d3';
+
+    ctx.beginPath();
+    ctx.moveTo(corridor[0].x - cameraX, 0);
+    ctx.lineTo(corridor[0].x - cameraX, corridor[0].top1);
+
+    for (const s of corridor) {
+        ctx.lineTo(s.x + s.width - cameraX, s.top2);
+    }
+
+    ctx.lineTo(W + 80, 0);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(corridor[0].x - cameraX, H);
+    ctx.lineTo(corridor[0].x - cameraX, corridor[0].bottom1);
+
+    for (const s of corridor) {
+        ctx.lineTo(s.x + s.width - cameraX, s.bottom2);
+    }
+
+    ctx.lineTo(W + 80, H);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#b8b8b8';
+
+    ctx.beginPath();
+
+    corridor.forEach((s, i) => {
+        const x1 = s.x - cameraX;
+        const x2 = x1 + s.width;
+
+        if (i === 0) ctx.moveTo(x1, s.top1);
+        ctx.lineTo(x2, s.top2);
+    });
+
+    ctx.stroke();
+
+    ctx.beginPath();
+
+    corridor.forEach((s, i) => {
+        const x1 = s.x - cameraX;
+        const x2 = x1 + s.width;
+
+        if (i === 0) ctx.moveTo(x1, s.bottom1);
+        ctx.lineTo(x2, s.bottom2);
+    });
+
+    ctx.stroke();
+}
+
+function drawBall(x, y) {
+    ctx.save();
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = trailColor;
+    ctx.lineWidth = TRAIL_WIDTH;
+
+    for (let i = 1; i < trail.length; i++) {
+        const a = trail[i - 1];
+        const b = trail[i];
+
+        const ax = a.x - cameraX;
+        const bx = b.x - cameraX;
+
+        if (
+            Math.max(ax, bx) < -TRAIL_WIDTH ||
+            Math.min(ax, bx) > W + TRAIL_WIDTH
+        ) continue;
+
+        ctx.beginPath();
+        ctx.moveTo(ax, a.y);
+        ctx.lineTo(bx, b.y);
+        ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.shadowColor = 'rgba(0,0,0,.16)';
+    ctx.shadowBlur = 7;
+    ctx.shadowOffsetY = 2;
+
+    if (
+        selectedSkin !== 'none' &&
+        skinImages[selectedSkin] &&
+        skinImages[selectedSkin].complete &&
+        skinImages[selectedSkin].naturalWidth > 0
+    ) {
+        const img = skinImages[selectedSkin];
+
+        ctx.beginPath();
+        ctx.arc(x, y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.clip();
+
+        ctx.drawImage(img, x - BALL_RADIUS, y - BALL_RADIUS, BALL_RADIUS * 2, BALL_RADIUS * 2);
+
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+
+        ctx.beginPath();
+        ctx.arc(x, y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(0,0,0,.14)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    } else {
+        ctx.fillStyle = ballColor;
+
+        ctx.beginPath();
+        ctx.arc(x, y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+
+        ctx.strokeStyle = 'rgba(0,0,0,.14)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
+function drawMenuBall() {
+    const x = W * .5;
+    const y = H * .28;
+
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,.16)';
+    ctx.shadowBlur = 7;
+    ctx.shadowOffsetY = 2;
+
+    if (
+        selectedSkin !== 'none' &&
+        skinImages[selectedSkin] &&
+        skinImages[selectedSkin].complete &&
+        skinImages[selectedSkin].naturalWidth > 0
+    ) {
+        const img = skinImages[selectedSkin];
+
+        ctx.beginPath();
+        ctx.arc(x, y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.clip();
+
+        ctx.drawImage(img, x - BALL_RADIUS, y - BALL_RADIUS, BALL_RADIUS * 2, BALL_RADIUS * 2);
+
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+
+        ctx.beginPath();
+        ctx.arc(x, y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(0,0,0,.14)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    } else {
+        ctx.fillStyle = ballColor;
+
+        ctx.beginPath();
+        ctx.arc(x, y, BALL_RADIUS, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetY = 0;
+
+        ctx.strokeStyle = 'rgba(0,0,0,.14)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
+function renderIdle() {
+    drawBackground();
+    drawMenuBall();
+}
+
+function loop(now) {
+    if (state !== 'playing') return;
+
+    const dt = Math.min((now - lastTime) / 1000, .032);
+    lastTime = now;
+
+    const velocity = gameSpeed / Math.SQRT2;
+    const dx = velocity * dt;
+
+    cameraX += dx;
+    playerY += (holding ? -velocity : velocity) * dt;
+
+    const worldX = playerWorldX();
+
+    distance = worldX / 10;
+
+    gameSpeed = Math.min(1800, 340 + Math.floor(distance / 100) * 35);
+
+    extendCorridor();
+
+    const bounds = getCorridorAt(worldX);
+
+    trail.push({ x: worldX, y: playerY });
+
+    while (trail.length > 1 && trail[1].x < cameraX - TRAIL_WIDTH) {
+        trail.shift();
+    }
+
+    if (
+        playerY - BALL_RADIUS < bounds.top ||
+        playerY + BALL_RADIUS > bounds.bottom
+    ) {
+        endGame();
+        return;
+    }
+
+    drawBackground();
+    drawCorridor();
+    drawBall(playerX(), playerY);
+
+    $('distance').textContent = Math.floor(distance) + ' m';
+
+    requestAnimationFrame(loop);
+}
+
+function idleLoop() {
+    if (state !== 'playing') renderIdle();
+    requestAnimationFrame(idleLoop);
+}
+
+refreshColorOptions();
+updateKeybindDisplay();
+updateSizeOptions();
+
+resizeParticles();
+requestAnimationFrame(animateParticles);
+idleLoop();
+
+})();
+</script>
+
+</body>
+</html>
+```
